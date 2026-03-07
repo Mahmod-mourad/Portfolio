@@ -201,7 +201,7 @@ function ExperienceSection() {
   return (
     <div className="experience-container" style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
       {/* Tab list */}
-      <div className="glass-card" style={{ display: "flex", flexDirection: "column", minWidth: "200px", overflow: "hidden", padding: "8px" }}>
+      <div className="glass-card exp-tabs" style={{ display: "flex", flexDirection: "column", minWidth: "200px", overflow: "hidden", padding: "8px" }}>
         {EXPERIENCE.map((e, i) => (
           <button key={i} onClick={() => setTab(i)} style={{
             background: tab === i ? "rgba(255,255,255,0.08)" : "transparent",
@@ -215,7 +215,7 @@ function ExperienceSection() {
             onMouseEnter={e => { if (tab !== i) { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; } }}
             onMouseLeave={e => { if (tab !== i) { e.currentTarget.style.background = "transparent"; } }}
           >
-            {tab === i && <div style={{ position: "absolute", left: 0, top: "20%", bottom: "20%", width: "3px", background: T.accent1, borderRadius: "0 4px 4px 0", boxShadow: "0 0 10px #c084fc" }} />}
+            {tab === i && <div className="tab-indicator" style={{ position: "absolute", left: 0, top: "20%", bottom: "20%", width: "3px", background: T.accent1, borderRadius: "0 4px 4px 0", boxShadow: "0 0 10px #c084fc" }} />}
             {e.company}
           </button>
         ))}
@@ -294,6 +294,7 @@ function EduCard({ item }) {
 export default function Portfolio() {
   const active = useScrollSpy();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     window.addEventListener("scroll", () => setScrolled(window.scrollY > 50), { passive: true });
@@ -391,11 +392,35 @@ export default function Portfolio() {
         /* Responsive */
         @media(max-width: 900px) {
           .nav-links { display: none !important; }
+          .mobile-menu-btn { display: block !important; }
+          .header-container { padding: 0 24px !important; }
           .main-content { padding: 0 24px !important; }
           .bento-grid { grid-template-columns: 1fr !important; }
           .experience-container { flex-direction: column !important; }
+          .exp-tabs { flex-direction: row !important; overflow-x: auto !important; width: 100%; white-space: nowrap; }
+          .exp-tabs button { flex: 0 0 auto; text-align: center !important; }
+          .tab-indicator { top: auto !important; bottom: 0 !important; left: 20% !important; right: 20% !important; width: auto !important; height: 3px !important; border-radius: 4px 4px 0 0 !important; }
           .stats-grid { grid-template-columns: 1fr 1fr !important; }
           .projects-grid { grid-template-columns: 1fr !important; }
+          .about-img-container { width: 100% !important; max-width: 280px; margin: 0 auto; }
+          .hero-buttons { flex-direction: column !important; width: 100%; }
+          .hero-buttons a { width: 100%; text-align: center; }
+        }
+        @media(max-width: 500px) {
+          .stats-grid { grid-template-columns: 1fr !important; }
+          .hero-elem h1 { font-size: 3rem !important; }
+        }
+        .mobile-menu-btn { display: none; background: none; border: none; color: ${T.textMain}; cursor: pointer; z-index: 101; }
+        
+        .mobile-menu {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(9, 9, 11, 0.98); backdrop-filter: blur(20px); z-index: 99;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 24px; padding: 24px;
+          opacity: 0; pointer-events: none; transition: all 0.3s;
+        }
+        .mobile-menu.open {
+          opacity: 1; pointer-events: auto;
         }
       `}</style>
 
@@ -405,7 +430,7 @@ export default function Portfolio() {
       <div className="blob blob-3" />
 
       {/* TOP NAV BAR */}
-      <header style={{
+      <header className="header-container" style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         height: "80px", display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 64px",
@@ -452,7 +477,51 @@ export default function Portfolio() {
             </a>
           </div>
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {mobileMenuOpen ? (
+              <path d="M18 6L6 18M6 6l12 12" />
+            ) : (
+              <path d="M3 12h18M3 6h18M3 18h18" />
+            )}
+          </svg>
+        </button>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      <div className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}>
+        {NAV_LINKS.map((n, i) => (
+          <button key={n} onClick={() => {
+            setMobileMenuOpen(false);
+            document.getElementById(n.toLowerCase())?.scrollIntoView({ behavior: "smooth" });
+          }}
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontFamily: T.fontHeading, fontSize: "1.5rem", fontWeight: 600,
+              color: active === n ? T.textMain : T.textMuted,
+            }}
+          >
+            <span style={{ fontFamily: T.fontMono, color: T.accent1, fontSize: "0.8em", marginRight: "8px" }}>0{i + 1}.</span>
+            {n}
+          </button>
+        ))}
+        <a href="https://wa.me/201030796415?text=Hello%20Mahmoud,%20I%20would%20like%20to%20contact%20you!" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
+          fontFamily: T.fontBody, fontSize: "1.1rem", fontWeight: 600, color: T.textMain,
+          padding: "12px 32px", marginTop: "16px"
+        }}>
+          Hire Me
+        </a>
+        <div style={{ display: "flex", gap: "24px", alignItems: "center", marginTop: "24px" }}>
+          <a href="https://github.com/Mahmod-mourad" target="_blank" rel="noopener noreferrer" style={{ color: T.textMuted }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/mahmoud-mourad-946a59263/" target="_blank" rel="noopener noreferrer" style={{ color: T.textMuted }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          </a>
+        </div>
+      </div>
 
       {/* ── MAIN SCROLL AREA ── */}
       <main className="main-content" style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 10 }}>
@@ -472,7 +541,7 @@ export default function Portfolio() {
             Hi, I'm Mahmoud Mourad. A Software Developer based in Al Cairo , Egypt, specialising in building exceptional, scalable web and mobile applications from end-to-end.
           </p>
 
-          <div className="hero-elem" style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "80px" }}>
+          <div className="hero-elem hero-buttons" style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "80px" }}>
             <a href="#projects" className="glass-btn" onClick={e => { e.preventDefault(); document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" }); }} style={{
               fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.bg,
               padding: "16px 36px", background: "linear-gradient(135deg, #c084fc, #22d3ee)", border: "none",
@@ -525,8 +594,8 @@ export default function Portfolio() {
                   </div>
                 </div>
               </div>
-              <div style={{ flexShrink: 0, position: "relative" }}>
-                <div className="glass-card" style={{ width: "280px", height: "360px", padding: "12px", position: "relative", zIndex: 1 }}>
+              <div style={{ flexShrink: 0, position: "relative", width: "100%", maxWidth: "280px", margin: "0 auto" }}>
+                <div className="glass-card about-img-container" style={{ width: "100%", height: "360px", padding: "12px", position: "relative", zIndex: 1 }}>
                   <div style={{ width: "100%", height: "100%", borderRadius: "16px", background: "linear-gradient(180deg, rgba(192, 132, 252, 0.1), rgba(34, 211, 238, 0.1))", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)" }}>
                     <img src="/me.jpg" alt="Mahmoud Mourad" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
