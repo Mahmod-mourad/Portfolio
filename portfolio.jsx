@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useSpring, useInView } from "framer-motion";
 
 /* ─── THEME TOKENS ──────────────────────────────────────── */
 const T = {
@@ -15,6 +16,99 @@ const T = {
   fontBody: "'Inter', sans-serif",
   fontMono: "'Fira Code', monospace",
 };
+
+/* ─── FX COMPONENTS ──────────────────────────────────────── */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+  return (
+    <motion.div style={{ scaleX, position: "fixed", top: 0, left: 0, right: 0, height: "3px", transformOrigin: "0 0", background: "linear-gradient(90deg, #c084fc, #22d3ee)", zIndex: 200, borderRadius: "0 0 4px 0" }} />
+  );
+}
+
+function CursorGlow() {
+  const [pos, setPos] = useState({ x: -300, y: -300 });
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const move = (e) => { setPos({ x: e.clientX, y: e.clientY }); if (!on) setOn(true); };
+    const leave = () => setOn(false);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseout", leave);
+    return () => { window.removeEventListener("mousemove", move); window.removeEventListener("mouseout", leave); };
+  }, [on]);
+  return (
+    <div style={{
+      position: "fixed", top: 0, left: 0, width: 520, height: 520, pointerEvents: "none", zIndex: 1,
+      opacity: on ? 1 : 0, transition: "opacity 0.35s",
+      transform: `translate(${pos.x - 260}px, ${pos.y - 260}px)`,
+      background: "radial-gradient(circle, rgba(192,132,252,0.08) 0%, rgba(34,211,238,0.05) 38%, transparent 68%)",
+      borderRadius: "50%",
+    }} />
+  );
+}
+
+function Typewriter({ words }) {
+  const [text, setText] = useState("");
+  const [idx, setIdx] = useState(0);
+  const [del, setDel] = useState(false);
+  useEffect(() => {
+    const word = words[idx % words.length];
+    const t = setTimeout(() => {
+      if (!del) {
+        const next = word.slice(0, text.length + 1);
+        setText(next);
+        if (next === word) setTimeout(() => setDel(true), 1250);
+      } else {
+        const next = word.slice(0, text.length - 1);
+        setText(next);
+        if (next === "") { setDel(false); setIdx((i) => i + 1); }
+      }
+    }, del ? 42 : 85);
+    return () => clearTimeout(t);
+  }, [text, del, idx, words]);
+  return <span>{text}<span className="tw-cursor">|</span></span>;
+}
+
+function CountUp({ to, suffix = "" }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    const dur = 1500;
+    let raf;
+    const tick = (now) => {
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(to * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, to]);
+  return <span ref={ref}>{val}{suffix}</span>;
+}
+
+function Tilt({ children, max = 7 }) {
+  const ref = useRef(null);
+  const [tr, setTr] = useState({ rX: 0, rY: 0 });
+  const onMove = (e) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    setTr({ rY: px * max * 2, rX: -py * max * 2 });
+  };
+  const onLeave = () => setTr({ rX: 0, rY: 0 });
+  return (
+    <div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} style={{ perspective: "1100px" }}>
+      <div style={{ transform: `rotateX(${tr.rX}deg) rotateY(${tr.rY}deg)`, transition: "transform 0.18s ease-out", transformStyle: "preserve-3d", height: "100%" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 /* ─── DATA ───────────────────────────────────────────────── */
 const NAV_LINKS = ["About", "Experience", "Projects", "Education", "Skills", "Contact"];
@@ -200,14 +294,16 @@ function useFadeIn(threshold = 0.1) {
 
 /* ─── SMALL COMPONENTS ───────────────────────────────────── */
 function FadeSection({ children, delay = 0, style = {} }) {
-  const [ref, visible] = useFadeIn();
   return (
-    <div ref={ref} style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0) scale(1)" : "translateY(40px) scale(0.98)",
-      transition: `all 0.8s cubic-bezier(0.25, 1, 0.5, 1) ${delay}s`,
-      ...style,
-    }}>{children}</div>
+    <motion.div
+      initial={{ opacity: 0, y: 36, scale: 0.99 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-70px" }}
+      transition={{ duration: 0.7, delay, ease: [0.25, 1, 0.5, 1] }}
+      style={style}
+    >
+      {children}
+    </motion.div>
   );
 }
 
@@ -290,6 +386,7 @@ function ExperienceSection() {
 /* ─── FEATURED PROJECT CARD ──────────────────────────────── */
 function FeaturedProject({ proj, index }) {
   return (
+    <Tilt>
     <div className="glass-card proj-card" style={{ padding: "40px", marginBottom: "40px", position: "relative", overflow: "hidden" }}>
       {/* Background glow specific to card */}
       <div style={{ position: "absolute", bottom: -50, left: index % 2 === 0 ? -50 : "auto", right: index % 2 !== 0 ? -50 : "auto", width: "150px", height: "150px", background: index % 2 === 0 ? T.accent1 : T.accent2, filter: "blur(80px)", opacity: 0.15, pointerEvents: "none", borderRadius: "50%" }} />
@@ -339,6 +436,7 @@ function FeaturedProject({ proj, index }) {
         {proj.tech.map(t => <TechTag key={t} tag={t} />)}
       </div>
     </div>
+    </Tilt>
   );
 }
 
@@ -488,12 +586,60 @@ export default function Portfolio() {
         .mobile-menu.open {
           opacity: 1; pointer-events: auto;
         }
+
+        /* ── New FX ── */
+        .tw-cursor { animation: blink 1s step-end infinite; color: #22d3ee; font-weight: 600; }
+
+        .grid-bg {
+          position: fixed; inset: 0; z-index: 0; pointer-events: none;
+          background-image:
+            linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+          background-size: 56px 56px;
+        }
+
+        .marquee {
+          overflow: hidden; white-space: nowrap; position: relative; margin: 0 auto; max-width: 100%;
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          padding: 18px 0; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .marquee-inner { display: inline-block; animation: marquee-scroll 32s linear infinite; }
+        .marquee:hover .marquee-inner { animation-play-state: paused; }
+        @keyframes marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        .proj-card::before {
+          content: ""; position: absolute; inset: 0; border-radius: 24px; padding: 1px; pointer-events: none;
+          background: linear-gradient(135deg, rgba(192,132,252,0.55), rgba(34,211,238,0.45), transparent 70%);
+          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor; mask-composite: exclude;
+          opacity: 0; transition: opacity .45s;
+        }
+        .proj-card:hover::before { opacity: 1; }
+
+        .terminal-card { animation: float-slow 7s ease-in-out infinite; }
+        @keyframes float-slow { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+        .stat-value {
+          background: linear-gradient(135deg, #c084fc, #22d3ee);
+          -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .to-top {
+          position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 14px;
+          background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: #f8fafc;
+          font-size: 1.3rem; cursor: pointer; z-index: 120; backdrop-filter: blur(10px); transition: all .3s;
+        }
+        .to-top:hover { background: rgba(192,132,252,0.22); border-color: #c084fc; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(192,132,252,0.25); }
       `}</style>
 
       {/* BACKGROUND ELEMENTS */}
       <div className="blob blob-1" />
       <div className="blob blob-2" />
       <div className="blob blob-3" />
+      <ScrollProgress />
+      <CursorGlow />
+      <div className="grid-bg" />
 
       {/* TOP NAV BAR */}
       <header className="header-container" style={{
@@ -593,51 +739,89 @@ export default function Portfolio() {
       <main className="main-content" style={{ maxWidth: "1000px", margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 10 }}>
 
         {/* ── HERO ── */}
-        <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "80px" }}>
-          <div className="glass-card hero-elem" style={{ display: "inline-flex", alignItems: "center", padding: "8px 16px", borderRadius: "100px", marginBottom: "32px", alignSelf: "flex-start", border: "1px solid rgba(192,132,252,0.3)" }}>
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: T.accent2, boxShadow: "0 0 10px #22d3ee", marginRight: "12px", animation: "blink 2s infinite" }} />
-            <span style={{ fontFamily: T.fontMono, fontSize: "0.85rem", color: T.textMuted }}>Available for new opportunities</span>
+        <section style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", paddingTop: "80px", position: "relative" }}>
+          <div className="glass-card hero-elem" style={{ display: "inline-flex", alignItems: "center", padding: "8px 18px", borderRadius: "100px", marginBottom: "40px", alignSelf: "flex-start", border: "1px solid rgba(192,132,252,0.3)", gap: "10px" }}>
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#34d399", boxShadow: "0 0 10px #34d399", animation: "blink 2s infinite" }} />
+            <span style={{ fontFamily: T.fontMono, fontSize: "0.85rem", color: T.textMuted }}>Open to full-time & remote opportunities</span>
           </div>
 
-          <h1 className="hero-elem" style={{ fontSize: "clamp(3.5rem, 8vw, 6rem)", fontWeight: 800, fontFamily: T.fontHeading, color: T.textMain, letterSpacing: "-0.04em", lineHeight: 1.1, marginBottom: "16px" }}>
-            Building digital <br />
-            <span className="text-gradient">experiences.</span>
-          </h1>
-          <p className="hero-elem" style={{ maxWidth: "600px", fontSize: "clamp(1rem, 2vw, 1.2rem)", lineHeight: 1.8, color: T.textMuted, marginBottom: "48px" }}>
-            Hi, I'm Mahmoud Mourad. A Software Developer based in Al Cairo , Egypt, specialising in building exceptional, scalable web and mobile applications from end-to-end.
-          </p>
+          <div style={{ display: "flex", gap: "60px", alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ flex: "1.25", minWidth: "320px" }}>
+              <h1 className="hero-elem" style={{ fontSize: "clamp(3rem, 7vw, 5.2rem)", fontWeight: 800, fontFamily: T.fontHeading, color: T.textMain, letterSpacing: "-0.04em", lineHeight: 1.08, marginBottom: "20px" }}>
+                Hi, I'm <span className="text-gradient">Mahmoud.</span><br />
+                <span style={{ fontSize: "0.55em", fontWeight: 700, color: T.textMuted }}>I build</span>{" "}
+                <span style={{ fontSize: "0.62em" }}><Typewriter words={["scalable web apps.", "mobile experiences.", "APIs that hold up.", "full-stack products."]} /></span>
+              </h1>
+              <p className="hero-elem" style={{ maxWidth: "540px", fontSize: "clamp(1rem, 1.8vw, 1.15rem)", lineHeight: 1.85, color: T.textMuted, marginBottom: "40px" }}>
+                Full-stack developer based in Cairo, Egypt. I take products from an empty repo to production — Next.js and React Native up front, NestJS and PostgreSQL behind, Docker and CI/CD in between. 3+ years shipping across Europe and the Middle East.
+              </p>
 
-          <div className="hero-elem hero-buttons" style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "80px" }}>
-            <a href="#projects" className="glass-btn" onClick={e => { e.preventDefault(); document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" }); }} style={{
-              fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.bg,
-              padding: "16px 36px", background: "linear-gradient(135deg, #c084fc, #22d3ee)", border: "none",
-              boxShadow: "0 10px 30px rgba(192, 132, 252, 0.3)"
-            }}
-            >View Work</a>
-            <a href="https://drive.google.com/drive/folders/1lGdLzReirWqYMAcw5ou_AKkAAml8w_UQ" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
-              fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain,
-              padding: "16px 36px", border: "1px solid rgba(192, 132, 252, 0.5)"
-            }}
-            >Download CV</a>
-            <a href="https://wa.me/201030796415?text=Hello%20Mahmoud,%20I%20would%20like%20to%20contact%20you!" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
-              fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain,
-              padding: "16px 36px"
-            }}
-            >Contact Me</a>
-          </div>
-
-          {/* Quick stats Bento */}
-          <div className="hero-elem stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "16px", maxWidth: "700px" }}>
-            {[["3+", "Years Exp."], ["5+", "Products Shipped"], ["2", "Countries Worked"], ["Full", "Stack Mastery"]].map(([val, lab], i) => (
-              <div key={i} className="glass-card" style={{ padding: "24px 16px", textAlign: "center", borderRadius: "16px" }}>
-                <div style={{ fontFamily: T.fontHeading, fontSize: "2rem", fontWeight: 800, color: T.textMain, marginBottom: "4px" }}>{val}</div>
-                <div style={{ fontFamily: T.fontBody, fontSize: "0.8rem", color: T.textMuted, fontWeight: 500 }}>{lab}</div>
+              <div className="hero-elem hero-buttons" style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "56px" }}>
+                <a href="#projects" className="glass-btn" onClick={e => { e.preventDefault(); document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" }); }} style={{
+                  fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.bg,
+                  padding: "16px 36px", background: "linear-gradient(135deg, #c084fc, #22d3ee)", border: "none",
+                  boxShadow: "0 10px 30px rgba(192, 132, 252, 0.3)"
+                }}>View Work</a>
+                <a href="https://drive.google.com/drive/folders/1lGdLzReirWqYMAcw5ou_AKkAAml8w_UQ" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
+                  fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain,
+                  padding: "16px 36px", border: "1px solid rgba(192, 132, 252, 0.5)"
+                }}>Download CV</a>
+                <a href="https://wa.me/201030796415?text=Hello%20Mahmoud,%20I%20would%20like%20to%20contact%20you!" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
+                  fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain, padding: "16px 36px"
+                }}>Contact Me</a>
               </div>
-            ))}
+<div className="hero-elem stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "14px", maxWidth: "660px" }}>
+                <div className="glass-card" style={{ padding: "22px 14px", textAlign: "center", borderRadius: "16px" }}>
+                  <div className="stat-value" style={{ fontFamily: T.fontHeading, fontSize: "1.9rem", fontWeight: 800, marginBottom: "4px" }}><CountUp to={3} suffix="+" /></div>
+                  <div style={{ fontFamily: T.fontBody, fontSize: "0.78rem", color: T.textMuted, fontWeight: 500 }}>Years Experience</div>
+                </div>
+                <div className="glass-card" style={{ padding: "22px 14px", textAlign: "center", borderRadius: "16px" }}>
+                  <div className="stat-value" style={{ fontFamily: T.fontHeading, fontSize: "1.9rem", fontWeight: 800, marginBottom: "4px" }}><CountUp to={5} suffix="+" /></div>
+                  <div style={{ fontFamily: T.fontBody, fontSize: "0.78rem", color: T.textMuted, fontWeight: 500 }}>Products Shipped</div>
+                </div>
+                <div className="glass-card" style={{ padding: "22px 14px", textAlign: "center", borderRadius: "16px" }}>
+                  <div className="stat-value" style={{ fontFamily: T.fontHeading, fontSize: "1.9rem", fontWeight: 800, marginBottom: "4px" }}><CountUp to={10} suffix="+" /></div>
+                  <div style={{ fontFamily: T.fontBody, fontSize: "0.78rem", color: T.textMuted, fontWeight: 500 }}>Open-Source Repos</div>
+                </div>
+                <div className="glass-card" style={{ padding: "22px 14px", textAlign: "center", borderRadius: "16px" }}>
+                  <div className="stat-value" style={{ fontFamily: T.fontHeading, fontSize: "1.9rem", fontWeight: 800, marginBottom: "4px" }}><CountUp to={150} suffix="+" /></div>
+                  <div style={{ fontFamily: T.fontBody, fontSize: "0.78rem", color: T.textMuted, fontWeight: 500 }}>Tests Written</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Terminal visual */}
+            <div className="terminal-card hero-elem" style={{ flex: "0.85", minWidth: "300px", maxWidth: "430px", margin: "0 auto" }}>
+              <div className="glass-card" style={{ borderRadius: "18px", overflow: "hidden", boxShadow: "0 24px 70px rgba(0,0,0,0.5)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}>
+                  <span style={{ width: "11px", height: "11px", borderRadius: "50%", background: "#ff5f57" }} />
+                  <span style={{ width: "11px", height: "11px", borderRadius: "50%", background: "#febc2e" }} />
+                  <span style={{ width: "11px", height: "11px", borderRadius: "50%", background: "#28c840" }} />
+                  <span style={{ fontFamily: T.fontMono, fontSize: "0.72rem", color: T.textMuted, marginLeft: "10px" }}>mahmoud@dev — zsh</span>
+                </div>
+                <div style={{ padding: "22px 22px 26px", fontFamily: T.fontMono, fontSize: "0.84rem", lineHeight: 2 }}>
+                  <div style={{ color: T.textMuted }}><span style={{ color: "#34d399" }}>➜</span> <span style={{ color: T.accent1 }}>~</span> whoami</div>
+                  <div style={{ color: T.textMain }}>mahmoud-mourad · full-stack developer</div>
+                  <div style={{ color: T.textMuted, marginTop: "6px" }}><span style={{ color: "#34d399" }}>➜</span> <span style={{ color: T.accent1 }}>~</span> cat stack.txt</div>
+                  <div style={{ color: T.textMain }}>Next.js · NestJS · React Native · PostgreSQL</div>
+                  <div style={{ color: T.textMuted, marginTop: "6px" }}><span style={{ color: "#34d399" }}>➜</span> <span style={{ color: T.accent1 }}>~</span> npm run deploy --prod</div>
+                  <div style={{ color: T.accent2 }}>✓ build passed — 151 tests, 0 failures</div>
+                  <div style={{ color: T.textMuted, marginTop: "6px" }}><span style={{ color: "#34d399" }}>➜</span> <span style={{ color: T.accent1 }}>~</span> status</div>
+                  <div style={{ color: "#34d399" }}>● available · let's build something</div>
+                  <div style={{ color: T.textMuted, marginTop: "6px" }}><span style={{ color: "#34d399" }}>➜</span> <span className="tw-cursor">▊</span></div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* ── ABOUT ── */}
+<div className="marquee">
+          <div className="marquee-inner">
+            {(() => { const once = ["Next.js", "React", "TypeScript", "NestJS", "Node.js", "React Native", "PostgreSQL", "Supabase", "Stripe", "Socket.IO", "Prisma", "Docker", "AWS", "Tailwind CSS", "GraphQL", "CI/CD"]; const doubled = [...once, ...once]; return doubled.map((t, idx) => (<span key={idx} style={{ fontFamily: T.fontMono, fontSize: "0.85rem", color: T.textMuted, margin: "0 30px" }}><span style={{ color: T.accent1, marginRight: "8px" }}>◆</span>{t}</span>)); })()}
+          </div>
+        </div>
+        <div style={{ height: "40px" }} />
+                {/* ── ABOUT ── */}
         <section id="about" style={{ padding: "120px 0" }}>
           <FadeSection>
             <NumberedHeading num="01" text="About Me" />
@@ -769,6 +953,8 @@ export default function Portfolio() {
           </FadeSection>
         </section>
       </main>
+
+      <button className="to-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top">↑</button>
     </div >
   );
 }
