@@ -327,7 +327,7 @@ function FeaturedProject({ proj, index }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px", marginBottom: "32px" }}>
           {proj.gallery.map(([src, caption]) => (
             <a key={src} href={src.replace("screenshots/", "screenshots/")} target="_blank" rel="noopener noreferrer" style={{ display: "block", borderRadius: "14px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(0,0,0,0.3)" }}>
-              <img src={src} alt={caption} loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "16 / 10", objectFit: "cover", objectPosition: "top", transition: "transform 0.4s ease" }}
+              <img src={src} alt={caption} loading="eager" decoding="async" style={{ width: "100%", display: "block", aspectRatio: "16 / 10", objectFit: "cover", objectPosition: "top", transition: "transform 0.4s ease" }}
                 onMouseEnter={e => e.currentTarget.style.transform = "scale(1.03)"}
                 onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
               <div style={{ padding: "10px 14px", fontSize: "0.8rem", color: T.textMuted, borderTop: "1px solid rgba(255,255,255,0.06)", fontFamily: T.fontBody }}>{caption}</div>
