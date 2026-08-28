@@ -66,32 +66,74 @@ const EXPERIENCE = [
 
 const PROJECTS = [
   {
+    title: "NexMart",
+    description: "A full e-commerce build: catalogue with search, filters and pagination, cart and wishlist, order history, and Stripe checkout where webhooks settle orders on the server. Stock is reserved inside the order transaction, so two shoppers racing for the last unit can't both check out. Bilingual UI (Arabic/English) with real RTL layout and a dark mode.",
+    tech: ["Next.js 14", "TypeScript", "Prisma", "PostgreSQL", "Stripe", "Tailwind CSS"],
+    github: "https://github.com/Mahmod-mourad/e-commerce-platform-NexMart",
+    live: "https://nexmart.vercel.app",
+    emoji: "\uD83D\uDED2",
+    gallery: [
+      ["screenshots/nexmart/home.png", "Home page - hero, featured products and categories"],
+      ["screenshots/nexmart/products.png", "Product listing with search, filters and pagination"],
+      ["screenshots/nexmart/product-detail.png", "Product page with gallery, reviews and related items"],
+      ["screenshots/nexmart/cart.png", "Cart with quantity editing and order summary"],
+    ],
+  },
+  {
+    title: "Project Management System",
+    description: "A multi-tenant project tracker in the spirit of Trello or Linear. Each company gets its own workspace, and the isolation holds at the database level: Postgres row-level security decides what a query can touch, no matter what the application tries. Task board, per-project statistics, real-time notifications over Socket.IO, and 151 tests across unit, integration and e2e suites.",
+    tech: ["Next.js 14", "NestJS", "Supabase", "PostgreSQL RLS", "Socket.IO", "Jest"],
+    github: "https://github.com/Mahmod-mourad/Project-management-system",
+    live: "https://pms-web-lilac.vercel.app",
+    emoji: "\uD83D\uDCCB",
+    gallery: [
+      ["screenshots/pms/dashboard.png", "Dashboard with live stats and per-project charts"],
+      ["screenshots/pms/projects.png", "Project management with search and status filters"],
+      ["screenshots/pms/tasks.png", "Tasks with statuses, priorities and due dates"],
+      ["screenshots/pms/users.png", "Admin-only user management"],
+    ],
+  },
+  {
+    title: "Car Rental System",
+    description: "Car booking platform, fully Arabic RTL. Filters on transmission, fuel, seats and price; a radius search that finds vehicles near a branch using PostGIS; a booking flow with payments and refunds; and an admin panel for fleet management. The whole stack, PostGIS included, comes up with a single docker compose up.",
+    tech: ["Next.js", "NestJS", "PostgreSQL + PostGIS", "TypeORM", "Swagger", "Docker"],
+    github: "https://github.com/Mahmod-mourad/Car-Rental-System",
+    live: "https://mahmod-mourad.github.io/demo-hub/#car-rental",
+    emoji: "\uD83D\uDE97",
+    gallery: [
+      ["screenshots/car-rental/home.png", "Arabic RTL home page with featured cars"],
+      ["screenshots/car-rental/cars.png", "Vehicle listing backed by real database data"],
+      ["screenshots/car-rental/car-detail.png", "Car details with specs, daily rate and similar cars"],
+      ["screenshots/car-rental/swagger.png", "Full API documentation via Swagger"],
+    ],
+  },
+  {
     title: "Booking Platform",
     description: "Cross-platform booking app with React Native mobile, Next.js admin dashboard, and Node.js + Supabase backend. Real-time sync, role-based auth (RLS), shipped to production for users across Europe and the Middle East.",
     tech: ["React Native", "Next.js", "Node.js", "Supabase", "PostgreSQL"],
     github: "#",
-    emoji: "📱",
+    emoji: "\uD83D\uDCF1",
   },
   {
     title: "ERP System",
     description: "Full-stack ERP covering inventory, HR workflows, finance, and operational dashboards. React frontend, NestJS + PostgreSQL backend, deployed on AWS with Docker and CI/CD.",
     tech: ["NestJS", "React", "PostgreSQL", "Docker", "AWS", "Node.js"],
     github: "#",
-    emoji: "�",
+    emoji: "\uD83C\uDFE2",
   },
   {
     title: "Clinic Management System",
     description: "End-to-end clinic platform: patient records, appointment scheduling, and billing. NestJS + MongoDB backend, React frontend, JWT + OAuth2 auth.",
     tech: ["NestJS", "MongoDB", "React", "Node.js"],
     github: "#",
-    emoji: "🏥",
+    emoji: "\uD83C\uDFE5",
   },
   {
     title: "Real Estate Platform",
     description: "Frontend for property listings, search & filter, and residential unit sales. Reusable TypeScript component library with Tailwind CSS, REST API integration with performance optimisations.",
     tech: ["React.js", "TypeScript", "Tailwind CSS", "Next.js"],
     github: "#",
-    emoji: "🏠",
+    emoji: "\uD83C\uDFE0",
   },
 ];
 
@@ -262,13 +304,37 @@ function FeaturedProject({ proj, index }) {
             <h3 style={{ fontSize: "1.5rem", fontWeight: 700, fontFamily: T.fontHeading, color: T.textMain }}>{proj.title}</h3>
           </div>
         </div>
-        {proj.github && proj.github !== "#" && (
+        {proj.live && (
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            <a href={proj.live} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.accent2, borderColor: "rgba(34, 211, 238, 0.3)" }}>
+              Live Demo ↗
+            </a>
+            {proj.github && proj.github !== "#" && (
+              <a href={proj.github} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.textMain }}>
+                GitHub ↗
+              </a>
+            )}
+          </div>
+        )}
+        {!proj.live && proj.github && proj.github !== "#" && (
           <a href={proj.github} className="glass-btn float-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.textMain }}>
             GitHub ↗
           </a>
         )}
       </div>
       <p style={{ color: T.textMuted, fontSize: "1.05rem", lineHeight: 1.7, marginBottom: "32px", maxWidth: "800px" }}>{proj.description}</p>
+      {proj.gallery && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px", marginBottom: "32px" }}>
+          {proj.gallery.map(([src, caption]) => (
+            <a key={src} href={src.replace("screenshots/", "screenshots/")} target="_blank" rel="noopener noreferrer" style={{ display: "block", borderRadius: "14px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.08)", background: "rgba(0,0,0,0.3)" }}>
+              <img src={src} alt={caption} loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "16 / 10", objectFit: "cover", objectPosition: "top", transition: "transform 0.4s ease" }}
+                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.03)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"} />
+              <div style={{ padding: "10px 14px", fontSize: "0.8rem", color: T.textMuted, borderTop: "1px solid rgba(255,255,255,0.06)", fontFamily: T.fontBody }}>{caption}</div>
+            </a>
+          ))}
+        </div>
+      )}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
         {proj.tech.map(t => <TechTag key={t} tag={t} />)}
       </div>
@@ -597,7 +663,7 @@ export default function Portfolio() {
               <div style={{ flexShrink: 0, position: "relative", width: "100%", maxWidth: "280px", margin: "0 auto" }}>
                 <div className="glass-card about-img-container" style={{ width: "100%", height: "360px", padding: "12px", position: "relative", zIndex: 1 }}>
                   <div style={{ width: "100%", height: "100%", borderRadius: "16px", background: "linear-gradient(180deg, rgba(192, 132, 252, 0.1), rgba(34, 211, 238, 0.1))", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "1px solid rgba(255,255,255,0.05)" }}>
-                    <img src="/me.jpg" alt="Mahmoud Mourad" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={`${import.meta.env.BASE_URL}me.jpg`} alt="Mahmoud Mourad" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                 </div>
                 <div style={{ position: "absolute", inset: "-2px", background: "linear-gradient(135deg, #c084fc, #22d3ee)", borderRadius: "24px", zIndex: 0, opacity: 0.3, filter: "blur(20px)" }} />
@@ -618,6 +684,9 @@ export default function Portfolio() {
         <section id="projects" style={{ padding: "120px 0" }}>
           <FadeSection>
             <NumberedHeading num="03" text="Selected Works" />
+            <p style={{ fontFamily: T.fontMono, fontSize: "0.9rem", color: T.textMuted, marginBottom: "28px" }}>
+              The first three are open source — the links work, clone them and run them. Full walkthroughs with more screenshots live at <a href="https://mahmod-mourad.github.io/demo-hub/" target="_blank" rel="noopener noreferrer" style={{ color: T.accent2 }}>the demo hub</a>.
+            </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {PROJECTS.map((p, i) => (
                 <FadeSection key={i} delay={i * 0.1}>
