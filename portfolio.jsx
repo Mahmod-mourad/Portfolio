@@ -161,47 +161,75 @@ const EXPERIENCE = [
 const PROJECTS = [
   {
     title: "NexMart",
-    description: "A full e-commerce build: catalogue with search, filters and pagination, cart and wishlist, order history, and Stripe checkout where webhooks settle orders on the server. Stock is reserved inside the order transaction, so two shoppers racing for the last unit can't both check out. Bilingual UI (Arabic/English) with real RTL layout and a dark mode.",
+    solves: "Most product demos online are a handful of mocked components. This is a full shop — catalogue with search, filters and pagination, cart and wishlist, Stripe checkout, order history and an admin dashboard. Payments are settled by a server-side webhook, and stock is reserved inside the order transaction so two shoppers can't race the last unit.",
     tech: ["Next.js 14", "TypeScript", "Prisma", "PostgreSQL", "Stripe", "Tailwind CSS"],
     github: "https://github.com/Mahmod-mourad/e-commerce-platform-NexMart",
     live: "https://nexmart.vercel.app",
-    demo: "demo-hub/#nexmart",
     emoji: "\uD83D\uDED2",
     gallery: [
-      ["screenshots/nexmart/home.png", "Home page - hero, featured products and categories"],
-      ["screenshots/nexmart/products.png", "Product listing with search, filters and pagination"],
-      ["screenshots/nexmart/product-detail.png", "Product page with gallery, reviews and related items"],
-      ["screenshots/nexmart/cart.png", "Cart with quantity editing and order summary"],
+      ["screenshots/nexmart/home.png", "Home — hero, featured products, categories, deals"],
+      ["screenshots/nexmart/products.png", "Product listing — search, filters, pagination"],
+      ["screenshots/nexmart/product-detail.png", "Product page — gallery, reviews, related items"],
+      ["screenshots/nexmart/cart.png", "Cart — quantities, order summary"],
     ],
+    run: [
+      "# The quick route — one command brings up Postgres, migrations, seed data and the app.",
+      "git clone https://github.com/Mahmod-mourad/e-commerce-platform-NexMart.git",
+      "cd e-commerce-platform-NexMart",
+      "docker compose up --build",
+      "# App: http://localhost:3000",
+    ],
+    note: "No setup needed: payments run on Stripe test keys until you add your own to .env. Nothing is mocked — the catalogue, reviews and orders are real database rows.",
   },
   {
     title: "Project Management System",
-    description: "A multi-tenant project tracker in the spirit of Trello or Linear. Each company gets its own workspace, and the isolation holds at the database level: Postgres row-level security decides what a query can touch, no matter what the application tries. Task board, per-project statistics, real-time notifications over Socket.IO, and 151 tests across unit, integration and e2e suites.",
+    solves: "A task tracker for small teams, but built properly: every company that signs up gets its own tenant, and the isolation is enforced in the database with Postgres row-level security — not just in application code. There's a task board, per-project statistics, real-time updates over Socket.IO, and a test suite covering unit, integration and e2e.",
     tech: ["Next.js 14", "NestJS", "Supabase", "PostgreSQL RLS", "Socket.IO", "Jest"],
     github: "https://github.com/Mahmod-mourad/Project-management-system",
     live: "https://pms-web-lilac.vercel.app",
-    demo: "demo-hub/#pms",
     emoji: "\uD83D\uDCCB",
     gallery: [
-      ["screenshots/pms/dashboard.png", "Dashboard with live stats and per-project charts"],
-      ["screenshots/pms/projects.png", "Project management with search and status filters"],
-      ["screenshots/pms/tasks.png", "Tasks with statuses, priorities and due dates"],
-      ["screenshots/pms/users.png", "Admin-only user management"],
+      ["screenshots/pms/dashboard.png", "Dashboard — live stats and charts"],
+      ["screenshots/pms/projects.png", "Projects — create, edit, search, filter"],
+      ["screenshots/pms/tasks.png", "Tasks — status, priority, due dates"],
+      ["screenshots/pms/users.png", "User management — admin only"],
     ],
+    run: [
+      "# 1) Local database (Supabase CLI)",
+      "npx supabase start",
+      "# 2) Schema and seed data — apply in order",
+      'psql "$DB_URL" -f scripts/01-tenants-and-plans.sql',
+      'psql "$DB_URL" -f scripts/02-profiles-projects-tasks.sql',
+      'psql "$DB_URL" -f scripts/03-notifications.sql',
+      'psql "$DB_URL" -f scripts/04-seed-demo-data.sql',
+      "# 3) Backend (NestJS on 3001) — needs Supabase URL + service role key",
+      "cd backend",
+      "SUPABASE_URL=http://127.0.0.1:54321 SUPABASE_SERVICE_ROLE_KEY=... npm run start:dev",
+      "# 4) Frontend",
+      "NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1 npm run dev",
+      "# App: http://localhost:3000",
+    ],
+    note: "Demo login: admin@demo.localhost / DemoPassword123! — there's also a member account, same password, at member@demo.localhost.",
   },
   {
     title: "Car Rental System",
-    description: "Car booking platform, fully Arabic RTL. Filters on transmission, fuel, seats and price; a radius search that finds vehicles near a branch using PostGIS; a booking flow with payments and refunds; and an admin panel for fleet management. The whole stack, PostGIS included, comes up with a single docker compose up.",
+    solves: "An RTL-first car booking platform. Filters on transmission, fuel, seats and price; a radius search that finds cars near a specific branch using PostGIS; a booking flow with payments and refunds; reviews with owner replies; and an admin dashboard for the fleet. The whole thing — PostGIS included — starts with one docker compose command.",
     tech: ["Next.js", "NestJS", "PostgreSQL + PostGIS", "TypeORM", "Swagger", "Docker"],
     github: "https://github.com/Mahmod-mourad/Car-Rental-System",
-    live: "demo-hub/#car-rental",
-    demo: "demo-hub/#car-rental",
+    live: "https://mahmod-mourad.github.io/demo-hub/#car-rental",
     emoji: "\uD83D\uDE97",
     gallery: [
-      ["screenshots/car-rental/home.png", "Arabic RTL home page with featured cars"],
-      ["screenshots/car-rental/cars.png", "Vehicle listing backed by real database data"],
-      ["screenshots/car-rental/car-detail.png", "Car details with specs, daily rate and similar cars"],
-      ["screenshots/car-rental/swagger.png", "Full API documentation via Swagger"],
+      ["screenshots/car-rental/home.png", "Home — Arabic RTL layout"],
+      ["screenshots/car-rental/cars.png", "Cars listing — real data from the database"],
+      ["screenshots/car-rental/car-detail.png", "Car details — specs, daily rate, similar cars"],
+      ["screenshots/car-rental/swagger.png", "Swagger — the full API documented"],
+    ],
+    run: [
+      "# One command: PostGIS, migrations, seed data, web app and API.",
+      "git clone https://github.com/Mahmod-mourad/Car-Rental-System.git",
+      "cd Car-Rental-System",
+      "docker compose up --build",
+      "# Web app: http://localhost:3000 · API: :3001 · Swagger: :3001/api",
     ],
   },
   {
@@ -409,11 +437,6 @@ function FeaturedProject({ proj, index }) {
             <a href={proj.live} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.accent2, borderColor: "rgba(34, 211, 238, 0.3)" }}>
               Live Demo ↗
             </a>
-            {proj.demo && proj.demo !== proj.live && (
-              <a href={proj.demo} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.accent1, borderColor: "rgba(192, 132, 252, 0.3)" }}>
-                Walkthrough ↗
-              </a>
-            )}
             {proj.github && proj.github !== "#" && (
               <a href={proj.github} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.textMain }}>
                 GitHub ↗
@@ -427,7 +450,7 @@ function FeaturedProject({ proj, index }) {
           </a>
         )}
       </div>
-      <p style={{ color: T.textMuted, fontSize: "1.05rem", lineHeight: 1.7, marginBottom: "32px", maxWidth: "800px" }}>{proj.description}</p>
+      <p style={{ color: T.textMuted, fontSize: "1.05rem", lineHeight: 1.7, marginBottom: "32px", maxWidth: "800px" }}><b style={{ color: T.textMain }}>What it solves: </b>{proj.solves || proj.description}</p>
       {proj.gallery && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px", marginBottom: "32px" }}>
           {proj.gallery.map(([src, caption]) => (
@@ -443,6 +466,21 @@ function FeaturedProject({ proj, index }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
         {proj.tech.map(t => <TechTag key={t} tag={t} />)}
       </div>
+      {proj.run && (
+        <div style={{ marginTop: "32px" }}>
+          <h4 style={{ fontFamily: T.fontMono, fontSize: "0.85rem", color: T.accent2, margin: "0 0 12px", letterSpacing: "0.08em", textTransform: "uppercase" }}>// How to run</h4>
+          <pre style={{ background: "rgba(0,0,0,0.45)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "18px", overflowX: "auto", fontFamily: T.fontMono, fontSize: "0.85rem", lineHeight: 1.9, direction: "ltr", textAlign: "left", margin: 0 }}>
+            {proj.run.map((line, i) => line.startsWith("# ")
+              ? <span key={i} style={{ display: "block", color: "#64748b", whiteSpace: "pre-wrap" }}>{line}</span>
+              : <span key={i} style={{ display: "block", color: "#e2e8f0", whiteSpace: "pre-wrap" }}>{line}</span>)}
+          </pre>
+        </div>
+      )}
+      {proj.note && (
+        <div style={{ background: "rgba(192, 132, 252, 0.08)", border: "1px solid rgba(192, 132, 252, 0.3)", borderRadius: "10px", padding: "12px 16px", fontSize: "0.9rem", color: T.textMuted, marginTop: "16px", lineHeight: 1.6, fontFamily: T.fontBody }}>
+          {proj.note}
+        </div>
+      )}
     </div>
     </Tilt>
   );
@@ -770,10 +808,6 @@ export default function Portfolio() {
                   padding: "16px 36px", background: "linear-gradient(135deg, #c084fc, #22d3ee)", border: "none",
                   boxShadow: "0 10px 30px rgba(192, 132, 252, 0.3)"
                 }}>View Work</a>
-                <a href="demo-hub/" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
-                  fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain,
-                  padding: "16px 36px", border: "1px solid rgba(34, 211, 238, 0.5)"
-                }}>Project Demos 📸</a>
                 <a href="https://drive.google.com/drive/folders/1lGdLzReirWqYMAcw5ou_AKkAAml8w_UQ" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
                   fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain,
                   padding: "16px 36px", border: "1px solid rgba(192, 132, 252, 0.5)"
@@ -881,7 +915,7 @@ export default function Portfolio() {
           <FadeSection>
             <NumberedHeading num="03" text="Selected Works" />
             <p style={{ fontFamily: T.fontMono, fontSize: "0.9rem", color: T.textMuted, marginBottom: "28px" }}>
-              The first three are open source — the links work, clone them and run them. Full walkthroughs with more screenshots live at <a href="https://mahmod-mourad.github.io/demo-hub/" target="_blank" rel="noopener noreferrer" style={{ color: T.accent2 }}>the demo hub</a>.
+              The first three are open source — the links work, clone them and run them. Screenshots below are from the real apps running, with the exact commands to get each one up locally.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {PROJECTS.map((p, i) => (
