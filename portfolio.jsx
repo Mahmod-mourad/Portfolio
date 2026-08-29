@@ -165,6 +165,7 @@ const PROJECTS = [
     tech: ["Next.js 14", "TypeScript", "Prisma", "PostgreSQL", "Stripe", "Tailwind CSS"],
     github: "https://github.com/Mahmod-mourad/e-commerce-platform-NexMart",
     live: "https://nexmart.vercel.app",
+    demo: "demo-hub/#nexmart",
     emoji: "\uD83D\uDED2",
     gallery: [
       ["screenshots/nexmart/home.png", "Home page - hero, featured products and categories"],
@@ -179,6 +180,7 @@ const PROJECTS = [
     tech: ["Next.js 14", "NestJS", "Supabase", "PostgreSQL RLS", "Socket.IO", "Jest"],
     github: "https://github.com/Mahmod-mourad/Project-management-system",
     live: "https://pms-web-lilac.vercel.app",
+    demo: "demo-hub/#pms",
     emoji: "\uD83D\uDCCB",
     gallery: [
       ["screenshots/pms/dashboard.png", "Dashboard with live stats and per-project charts"],
@@ -192,7 +194,8 @@ const PROJECTS = [
     description: "Car booking platform, fully Arabic RTL. Filters on transmission, fuel, seats and price; a radius search that finds vehicles near a branch using PostGIS; a booking flow with payments and refunds; and an admin panel for fleet management. The whole stack, PostGIS included, comes up with a single docker compose up.",
     tech: ["Next.js", "NestJS", "PostgreSQL + PostGIS", "TypeORM", "Swagger", "Docker"],
     github: "https://github.com/Mahmod-mourad/Car-Rental-System",
-    live: "https://mahmod-mourad.github.io/demo-hub/#car-rental",
+    live: "demo-hub/#car-rental",
+    demo: "demo-hub/#car-rental",
     emoji: "\uD83D\uDE97",
     gallery: [
       ["screenshots/car-rental/home.png", "Arabic RTL home page with featured cars"],
@@ -406,6 +409,11 @@ function FeaturedProject({ proj, index }) {
             <a href={proj.live} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.accent2, borderColor: "rgba(34, 211, 238, 0.3)" }}>
               Live Demo ↗
             </a>
+            {proj.demo && proj.demo !== proj.live && (
+              <a href={proj.demo} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.accent1, borderColor: "rgba(192, 132, 252, 0.3)" }}>
+                Walkthrough ↗
+              </a>
+            )}
             {proj.github && proj.github !== "#" && (
               <a href={proj.github} className="glass-btn" target="_blank" rel="noopener noreferrer" style={{ padding: "10px 20px", fontSize: "0.9rem", fontFamily: T.fontMono, color: T.textMain }}>
                 GitHub ↗
@@ -762,6 +770,10 @@ export default function Portfolio() {
                   padding: "16px 36px", background: "linear-gradient(135deg, #c084fc, #22d3ee)", border: "none",
                   boxShadow: "0 10px 30px rgba(192, 132, 252, 0.3)"
                 }}>View Work</a>
+                <a href="demo-hub/" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
+                  fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain,
+                  padding: "16px 36px", border: "1px solid rgba(34, 211, 238, 0.5)"
+                }}>Project Demos 📸</a>
                 <a href="https://drive.google.com/drive/folders/1lGdLzReirWqYMAcw5ou_AKkAAml8w_UQ" target="_blank" rel="noopener noreferrer" className="glass-btn" style={{
                   fontFamily: T.fontBody, fontSize: "1rem", fontWeight: 600, color: T.textMain,
                   padding: "16px 36px", border: "1px solid rgba(192, 132, 252, 0.5)"
