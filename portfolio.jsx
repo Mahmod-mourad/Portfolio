@@ -233,14 +233,6 @@ const PROJECTS = [
     ],
   },
   {
-    title: "Korax — Stadium Booking",
-    description: "Cross-platform mobile booking app built with React Native (Expo): stadium management for owners, booking and scheduling for players, match history, ratings, and OTP authentication — with an Arabic-first UI.",
-    tech: ["React Native", "Expo", "TypeScript", "React Navigation", "React Native Paper"],
-    github: "https://github.com/Mahmod-mourad/korax-stadium-booking",
-    emoji: "\uD83C\uDFDF",
-    label: "Open Source",
-  },
-  {
     title: "Clinic Management Desktop App",
     description: "Offline-first clinic management for desktop: encrypted local SQLite database, Drizzle ORM, patient records and appointments, PDF documents, Excel exports, and Google Drive backup — built with Electron, React, and TypeScript.",
     tech: ["Electron", "React", "TypeScript", "SQLite (encrypted)", "Drizzle ORM"],
@@ -264,14 +256,6 @@ const PROJECTS = [
     github: "https://github.com/Mahmod-mourad/ayoub-company-site",
     live: "https://ayoub-company-site.vercel.app",
     emoji: "\uD83C\uDFED",
-    label: "Open Source",
-  },
-  {
-    title: "Nexus API",
-    description: "A multi-tenant REST + GraphQL API built in Rust on Axum: JWT auth with tenant-id enforcement, rate limiting, Prometheus metrics, and a documented middleware stack — shipped with Docker, migrations and tests.",
-    tech: ["Rust", "Axum", "GraphQL", "JWT", "Docker"],
-    github: "https://github.com/Mahmod-mourad/rust-nexus-api",
-    emoji: "\uD83E\uDD80",
     label: "Open Source",
   },
   {
@@ -305,38 +289,6 @@ const PROJECTS = [
     tech: ["React.js", "TypeScript", "Tailwind CSS", "Next.js"],
     github: "#",
     emoji: "\uD83C\uDFE0",
-  },
-  {
-    title: "ferroedge — WASM Edge Platform",
-    description: "A distributed edge-computing platform written in Rust: executes WebAssembly workloads across multiple nodes with low-latency scheduling, LRU module caching, circuit breakers, graceful shutdown, and observability via OpenTelemetry, Jaeger and Prometheus.",
-    tech: ["Rust", "WebAssembly", "OpenTelemetry", "Prometheus", "Jaeger"],
-    github: "https://github.com/Mahmod-mourad/ferroedge",
-    emoji: "\u26A1",
-    label: "Open Source",
-  },
-  {
-    title: "Crypto Accounting Engine",
-    description: "An event-driven cryptocurrency accounting engine in Rust: FIFO profit-and-loss tracking over Kafka events, exposed through gRPC and REST APIs with PostgreSQL storage.",
-    tech: ["Rust", "Kafka", "gRPC", "REST", "PostgreSQL"],
-    github: "https://github.com/Mahmod-mourad/rust-crypto-accounting-engine",
-    emoji: "\uD83E\uDE99",
-    label: "Open Source",
-  },
-  {
-    title: "Car Market Price Prediction",
-    description: "Graduation data-science project: used-car price prediction in Python — exploratory analysis, feature work and regression models.",
-    tech: ["Python", "Pandas", "Regression Models", "Data Analysis"],
-    github: "https://github.com/Mahmod-mourad/ml-car-market-analysis",
-    emoji: "\uD83D\uDCCA",
-    label: "Open Source",
-  },
-  {
-    title: "Multimedia Compression Algorithms",
-    description: "Dependency-free Python implementations of four classical multimedia compression algorithms, written for study and comparison.",
-    tech: ["Python", "Algorithms", "Compression"],
-    github: "https://github.com/Mahmod-mourad/multimedia-compression-algorithms",
-    emoji: "\uD83D\uDDDC",
-    label: "Open Source",
   },
 ];
 
@@ -993,7 +945,7 @@ export default function Portfolio() {
           <FadeSection>
             <NumberedHeading num="03" text="Selected Works" />
             <p style={{ fontFamily: T.fontMono, fontSize: "0.9rem", color: T.textMuted, marginBottom: "28px" }}>
-              The first three are the flagship full-stack builds — clone them and run them; screenshots are from the real apps running, with the exact commands to get each one up locally. Everything labelled Open Source is public too — the GitHub links work. Cards labelled Professional are client and product work that lives in private repositories.
+              Full-stack work only: web platforms designed, built and shipped end to end — frontend, API, database, auth, payments and deployment. The first three are the flagship builds — clone them and run them; screenshots are from the real apps running, with the exact commands to get each one up locally. Everything labelled Open Source is public with a working GitHub link; Professional cards are client and product work that lives in private repositories.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {PROJECTS.map((p, i) => (
