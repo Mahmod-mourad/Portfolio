@@ -233,7 +233,50 @@ const PROJECTS = [
     ],
   },
   {
+    title: "Korax — Stadium Booking",
+    description: "Cross-platform mobile booking app built with React Native (Expo): stadium management for owners, booking and scheduling for players, match history, ratings, and OTP authentication — with an Arabic-first UI.",
+    tech: ["React Native", "Expo", "TypeScript", "React Navigation", "React Native Paper"],
+    github: "https://github.com/Mahmod-mourad/korax-stadium-booking",
+    emoji: "\uD83C\uDFDF",
+    label: "Open Source",
+  },
+  {
+    title: "Clinic Management Desktop App",
+    description: "Offline-first clinic management for desktop: encrypted local SQLite database, Drizzle ORM, patient records and appointments, PDF documents, Excel exports, and Google Drive backup — built with Electron, React, and TypeScript.",
+    tech: ["Electron", "React", "TypeScript", "SQLite (encrypted)", "Drizzle ORM"],
+    github: "https://github.com/Mahmod-mourad/Clinic-Management-Desktop-App",
+    emoji: "\uD83D\uDDA5",
+    label: "Open Source",
+  },
+  {
+    title: "WhiteBoard — AI Canvas",
+    description: "An infinite-canvas visual workspace for content creators: embed videos, posts and documents on a pannable board, with an AI assistant that processes scraped and transcribed content (via Apify) into scripts, summaries and ideas. Persisted with Supabase.",
+    tech: ["Next.js", "TypeScript", "Supabase", "AI Integration", "Apify"],
+    github: "https://github.com/Mahmod-mourad/WhiteBoard",
+    live: "https://whiteboard-two-psi.vercel.app",
+    emoji: "\uD83C\uDFA8",
+    label: "Open Source",
+  },
+  {
+    title: "House Plast — Company Website",
+    description: "Bilingual (Arabic/English) company website with a Supabase-backed product catalogue and news section, WhatsApp ordering, and an RTL-first layout.",
+    tech: ["Next.js 14", "TypeScript", "Tailwind CSS", "Supabase"],
+    github: "https://github.com/Mahmod-mourad/ayoub-company-site",
+    live: "https://ayoub-company-site.vercel.app",
+    emoji: "\uD83C\uDFED",
+    label: "Open Source",
+  },
+  {
+    title: "Nexus API",
+    description: "A multi-tenant REST + GraphQL API built in Rust on Axum: JWT auth with tenant-id enforcement, rate limiting, Prometheus metrics, and a documented middleware stack — shipped with Docker, migrations and tests.",
+    tech: ["Rust", "Axum", "GraphQL", "JWT", "Docker"],
+    github: "https://github.com/Mahmod-mourad/rust-nexus-api",
+    emoji: "\uD83E\uDD80",
+    label: "Open Source",
+  },
+  {
     title: "Booking Platform",
+    label: "Professional — private repo",
     description: "Cross-platform booking app with React Native mobile, Next.js admin dashboard, and Node.js + Supabase backend. Real-time sync, role-based auth (RLS), shipped to production for users across Europe and the Middle East.",
     tech: ["React Native", "Next.js", "Node.js", "Supabase", "PostgreSQL"],
     github: "#",
@@ -241,6 +284,7 @@ const PROJECTS = [
   },
   {
     title: "ERP System",
+    label: "Professional — private repo",
     description: "Full-stack ERP covering inventory, HR workflows, finance, and operational dashboards. React frontend, NestJS + PostgreSQL backend, deployed on AWS with Docker and CI/CD.",
     tech: ["NestJS", "React", "PostgreSQL", "Docker", "AWS", "Node.js"],
     github: "#",
@@ -248,6 +292,7 @@ const PROJECTS = [
   },
   {
     title: "Clinic Management System",
+    label: "Professional — private repo",
     description: "End-to-end clinic platform: patient records, appointment scheduling, and billing. NestJS + MongoDB backend, React frontend, JWT + OAuth2 auth.",
     tech: ["NestJS", "MongoDB", "React", "Node.js"],
     github: "#",
@@ -255,10 +300,43 @@ const PROJECTS = [
   },
   {
     title: "Real Estate Platform",
+    label: "Professional — private repo",
     description: "Frontend for property listings, search & filter, and residential unit sales. Reusable TypeScript component library with Tailwind CSS, REST API integration with performance optimisations.",
     tech: ["React.js", "TypeScript", "Tailwind CSS", "Next.js"],
     github: "#",
     emoji: "\uD83C\uDFE0",
+  },
+  {
+    title: "ferroedge — WASM Edge Platform",
+    description: "A distributed edge-computing platform written in Rust: executes WebAssembly workloads across multiple nodes with low-latency scheduling, LRU module caching, circuit breakers, graceful shutdown, and observability via OpenTelemetry, Jaeger and Prometheus.",
+    tech: ["Rust", "WebAssembly", "OpenTelemetry", "Prometheus", "Jaeger"],
+    github: "https://github.com/Mahmod-mourad/ferroedge",
+    emoji: "\u26A1",
+    label: "Open Source",
+  },
+  {
+    title: "Crypto Accounting Engine",
+    description: "An event-driven cryptocurrency accounting engine in Rust: FIFO profit-and-loss tracking over Kafka events, exposed through gRPC and REST APIs with PostgreSQL storage.",
+    tech: ["Rust", "Kafka", "gRPC", "REST", "PostgreSQL"],
+    github: "https://github.com/Mahmod-mourad/rust-crypto-accounting-engine",
+    emoji: "\uD83E\uDE99",
+    label: "Open Source",
+  },
+  {
+    title: "Car Market Price Prediction",
+    description: "Graduation data-science project: used-car price prediction in Python — exploratory analysis, feature work and regression models.",
+    tech: ["Python", "Pandas", "Regression Models", "Data Analysis"],
+    github: "https://github.com/Mahmod-mourad/ml-car-market-analysis",
+    emoji: "\uD83D\uDCCA",
+    label: "Open Source",
+  },
+  {
+    title: "Multimedia Compression Algorithms",
+    description: "Dependency-free Python implementations of four classical multimedia compression algorithms, written for study and comparison.",
+    tech: ["Python", "Algorithms", "Compression"],
+    github: "https://github.com/Mahmod-mourad/multimedia-compression-algorithms",
+    emoji: "\uD83D\uDDDC",
+    label: "Open Source",
   },
 ];
 
@@ -428,7 +506,7 @@ function FeaturedProject({ proj, index }) {
             {proj.emoji}
           </div>
           <div>
-            <p style={{ fontFamily: T.fontMono, fontSize: "0.8rem", color: T.accent1, marginBottom: "4px", letterSpacing: "0.1em", textTransform: "uppercase" }}>Featured</p>
+            <p style={{ fontFamily: T.fontMono, fontSize: "0.8rem", color: T.accent1, marginBottom: "4px", letterSpacing: "0.1em", textTransform: "uppercase" }}>{proj.label || "Featured"}</p>
             <h3 style={{ fontSize: "1.5rem", fontWeight: 700, fontFamily: T.fontHeading, color: T.textMain }}>{proj.title}</h3>
           </div>
         </div>
@@ -915,7 +993,7 @@ export default function Portfolio() {
           <FadeSection>
             <NumberedHeading num="03" text="Selected Works" />
             <p style={{ fontFamily: T.fontMono, fontSize: "0.9rem", color: T.textMuted, marginBottom: "28px" }}>
-              The first three are open source — the links work, clone them and run them. Screenshots below are from the real apps running, with the exact commands to get each one up locally.
+              The first three are the flagship full-stack builds — clone them and run them; screenshots are from the real apps running, with the exact commands to get each one up locally. Everything labelled Open Source is public too — the GitHub links work. Cards labelled Professional are client and product work that lives in private repositories.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
               {PROJECTS.map((p, i) => (
